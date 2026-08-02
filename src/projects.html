@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Projects | Eghosa Ohenhen</title>
+    <link rel="icon" href="assets/images/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body>
+    <div class="bg-accent-shape">
+      <div class="bg-circle"></div>
+      <div class="bg-rect"></div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-logo" aria-label="Go to home page">
+          <img src="assets/images/icon.svg" alt="" />
+          <span>eggomakes</span>
+        </a>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+          <li class="nav-item"><a href="index.html#contact" class="nav-link">Contact</a></li>
+        </ul>
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </nav>
+
+    <main class="page">
+      <header class="page-header">
+        <h1>Projects</h1>
+        <p>
+          Robots, trading tools, embedded systems, and one food pantry. Pick a card to
+          read what it did and what was hard about it.
+        </p>
+      </header>
+
+      <section class="carousel" aria-label="Project carousel">
+        <button class="carousel__nav carousel__nav--prev" type="button" aria-label="Previous projects">&#8592;</button>
+        <div class="carousel__track" id="track" tabindex="0"></div>
+        <button class="carousel__nav carousel__nav--next" type="button" aria-label="Next projects">&#8594;</button>
+      </section>
+    </main>
+
+    <footer>
+      <maintxt>Eghosa Ohenhen · Cambridge, MA</maintxt>
+    </footer>
+
+    <dialog class="modal" id="modal" aria-labelledby="modal-title">
+      <button class="modal__close" type="button" aria-label="Close">&#10005;</button>
+      <div class="modal__media" id="modal-media"></div>
+      <div class="modal__body">
+        <div class="modal__badge" id="modal-badge"></div>
+        <h2 class="modal__title" id="modal-title"></h2>
+        <p class="modal__blurb" id="modal-blurb"></p>
+        <div class="modal__footer">
+          <div class="tags" id="modal-tags"></div>
+          <a class="btn btn--ink" id="modal-link" href="#">Read the full write-up</a>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      /* -----------------------------------------------------------------
+         PROJECT DATA — everything here comes off the resume.
+
+         `image` paths are placeholders. The comment above each one is the
+         shot to go get. A missing file falls back to the gradient, so the
+         page never looks broken while you're still collecting photos.
+
+         `href` is optional — leave it out and the modal hides the link
+         instead of pointing at a page that doesn't exist yet.
+      ----------------------------------------------------------------- */
+      const projects = [
+        {
+          // IMAGE: the robot head on the bench, mid-expression, wires visible.
+          // If you can get a frame where someone is looking at it and it's
+          // looking back, use that one — it sells the whole project.
+          image: "assets/images/projects/marty.jpg",
+          badge: "MIT Media Lab · Fluid Interfaces",
+          title: "Embodied conversational robot head",
+          metric: "p99 loop lag: 173ms &rarr; 7ms",
+          blurb:
+            "Jaw, blink, gaze, and expression all want the same servos at the same time. I built a 100Hz arbitration loop with ownership-based priority scheduling so they negotiate instead of fighting. Then the thing got slow in a way nothing in the logs explained \u2014 so I wrote my own instrumentation, found the async event loop starving, and took p99 lag from 173ms to 7ms and the DAC buffer underflow rate from 92% down to near nothing. Below about 50ms a face stops looking laggy and starts looking alive.",
+          tags: ["Robotics", "Python", "Real-time Systems"]
+        },
+        {
+          // IMAGE: the report UI on a Bloomberg terminal (blur any real
+          // tickers), or the generated email side by side with the config
+          // screen. Show the before-and-after of the workflow.
+          image: "assets/images/projects/bloomberg.jpg",
+          badge: "Bloomberg · Trading Platform",
+          title: "Automated trader reporting",
+          metric: "Shipped end-to-end to the terminal",
+          blurb:
+            "Traders were assembling the same reports by hand every day. I built and shipped a React app on the terminal that takes their own configuration and delivers the report by email on a schedule \u2014 stateless REST all the way down. Working across London and Italy teams also meant finding service issues I couldn't fix and writing client-side workarounds so the feature stayed up anyway.",
+          tags: ["React", "REST", "Production Software"]
+        },
+        {
+          // IMAGE: the Grafana dashboard, full-screen, with real-looking
+          // traffic on it. Dense dashboards read as scale instantly.
+          image: "assets/images/projects/uber.jpg",
+          badge: "Uber · Fulfillment Platform",
+          title: "Trip progress detection at scale",
+          metric: "10M+ trips a day, <20ms pipeline",
+          blurb:
+            "Expanded the feature that decides whether a driver is on track for the fastest arrival, which is the difference between a useful ETA and a lie. Then built the observability nobody had: Grafana dashboards on a sub-20-millisecond monitoring pipeline over SQL and Kafka, so the team could finally see what their framework changes did to ten million daily trips before they found out from users.",
+          tags: ["Kafka", "SQL", "Grafana", "Distributed Systems"]
+        },
+        {
+          // IMAGE: a slide from the exec presentation, or the accuracy
+          // curve going 55% -> 100%. A clean chart works fine here.
+          image: "assets/images/projects/edgebert.jpg",
+          badge: "IBM Watson Research",
+          title: "EdgeBERT for self-driving urgency",
+          metric: "55% &rarr; 100% urgency accuracy",
+          blurb:
+            "Trained and demoed Harvard's EdgeBERT model on IBM hardware in PyTorch and CUDA, then presented it to fifty executives. The more interesting half came after: I repurposed the model to judge how urgent a passenger's command to a self-driving car is, by building a dataset that maps sentiment onto urgency. Accuracy went from 55% to 100% \u2014 the win was in framing the problem, not tuning the model.",
+          tags: ["PyTorch", "NLP", "CUDA"]
+        },
+        {
+          // IMAGE: the racecar on the track mid-run, motion blur welcome.
+          // Inset the LiDAR point cloud or the CV detection view if you have
+          // a screen recording to pull a frame from.
+          image: "assets/images/projects/racecar.jpg",
+          badge: "1st Place · MIT 6.141",
+          title: "Autonomous racecar",
+          metric: "Won the head-to-head race",
+          blurb:
+            "A ROS2 robot that follows traffic and races other robots wheel to wheel, using LiDAR for localization and computer vision for detection and control. It won. Racing against another autonomous car is a different problem from racing a clock \u2014 you're reacting to something that's also reacting to you, and the safe line and the fast line stop being the same line.",
+          tags: ["ROS2", "LiDAR", "Computer Vision", "Docker"]
+        },
+        {
+          // IMAGE: both devices powered on and in sync, hub and mobile unit
+          // in the same frame showing the same task. A macro of the PCB
+          // works as a second shot once the modal supports two images.
+          image: "assets/images/projects/taskbuddy.jpg",
+          badge: "Embedded",
+          title: "Task Buddy",
+          metric: "Keeps time through a power loss",
+          blurb:
+            "A Pomodoro timer that lives on two devices instead of one: a stationary hub and a mobile unit, master/slave across separate SoCs, syncing task state over Bluetooth UART. SPI drives the TFT display, I\u00B2C talks to an external RTC so it still knows what time it is after losing power. Written in C, where a dropped sync isn't a bug report \u2014 it's two devices confidently disagreeing.",
+          tags: ["C", "Bluetooth", "SPI / I2C", "Circuit Design"]
+        },
+        {
+          // IMAGE: the two portals side by side on a laptop and a phone.
+          // The map view with pantry pins is the most legible single screen.
+          image: "assets/images/projects/xpresspantry.jpg",
+          badge: "Full-stack",
+          title: "Xpress Pantry",
+          metric: "Two portals, built from interviews",
+          blurb:
+            "A food pantry ordering platform with two sides: staff set inventory, storefront visibility, and pickup windows; clients find pantries nearby, browse what's actually in stock, and schedule a pickup. Node, MongoDB, TypeScript, Vue, with Google Maps and a food database wired in. I ran need-finding interviews with community members first, and they changed the design \u2014 dignity and privacy mattered more to people than speed did.",
+          tags: ["TypeScript", "Vue.js", "MongoDB", "UX Research"]
+        },
+        {
+          // IMAGE: a grid of your best MIT Admissions pieces, or the
+          // Congressional Art Award piece photographed properly. This card
+          // is the proof that the design claim on your homepage is real.
+          image: "assets/images/projects/design.jpg",
+          badge: "Design",
+          title: "Graphic design, MIT Admissions",
+          metric: "Congressional Art Award winner",
+          blurb:
+            "Freelance design work for MIT Admissions since 2024, for an audience of seventeen-year-olds deciding what to do with their lives. Earlier: a Congressional Art Award. The art came first and it's why I care whether a thing is usable, not just whether it runs.",
+          tags: ["Figma", "Photoshop", "Visual Design"]
+        }
+      ];
+
+      /* ---------------------------- render ---------------------------- */
+      const track = document.getElementById("track");
+
+      track.innerHTML = projects
+        .map(
+          (p, i) => `
+        <button class="card" type="button" data-index="${i}">
+          <div class="card__media">
+            <img src="${p.image}" alt="" loading="lazy" onerror="this.remove()" />
+            <span class="card__badge">${p.badge}</span>
+          </div>
+          <div class="card__body">
+            <h2 class="card__title">${p.title}</h2>
+            <div class="card__metric">${p.metric}</div>
+            <div class="tags">
+              ${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}
+            </div>
+          </div>
+        </button>`
+        )
+        .join("");
+
+      /* ---------------------------- modal ----------------------------- */
+      const modal = document.getElementById("modal");
+      const modalLink = document.getElementById("modal-link");
+
+      track.addEventListener("click", (e) => {
+        const card = e.target.closest(".card");
+        if (!card) return;
+
+        const p = projects[card.dataset.index];
+        document.getElementById("modal-media").innerHTML = `<img src="${p.image}" alt="" onerror="this.remove()" />`;
+        document.getElementById("modal-badge").textContent = p.badge;
+        document.getElementById("modal-title").textContent = p.title;
+        document.getElementById("modal-blurb").textContent = p.blurb;
+        document.getElementById("modal-tags").innerHTML = p.tags
+          .map((t) => `<span class="tag">${t}</span>`)
+          .join("");
+
+        // No write-up page yet? Don't show a dead link.
+        modalLink.hidden = !p.href;
+        if (p.href) modalLink.href = p.href;
+
+        modal.showModal();
+      });
+
+      modal.querySelector(".modal__close").addEventListener("click", () => modal.close());
+
+      // Click outside the card closes it.
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.close();
+      });
+
+      /* --------------------------- carousel --------------------------- */
+      const prev = document.querySelector(".carousel__nav--prev");
+      const next = document.querySelector(".carousel__nav--next");
+
+      const step = () => track.querySelector(".card").offsetWidth + 16;
+
+      prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+      next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+
+      // Hide an arrow when there's nothing left that way.
+      const updateArrows = () => {
+        prev.disabled = track.scrollLeft < 8;
+        next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8;
+      };
+
+      track.addEventListener("scroll", updateArrows, { passive: true });
+      window.addEventListener("resize", updateArrows);
+      updateArrows();
+
+      /* ------------------------ mobile nav ---------------------------- */
+      const navToggle = document.querySelector(".nav-toggle");
+      const navMenu = document.querySelector(".nav-menu");
+
+      navToggle.addEventListener("click", () => {
+        navToggle.classList.toggle("active");
+        navMenu.classList.toggle("active");
+      });
+
+      document.querySelectorAll(".nav-link").forEach((link) =>
+        link.addEventListener("click", () => {
+          navToggle.classList.remove("active");
+          navMenu.classList.remove("active");
+        })
+      );
+    </script>
+  </body>
+</html>

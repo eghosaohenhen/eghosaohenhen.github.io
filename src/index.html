@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Eghosa Ohenhen — Software Engineer</title>
+    <link rel="icon" href="assets/images/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Eghosa Ohenhen — MIT EECS '26. Real-time robotics at the MIT Media Lab, distributed systems at Bloomberg and Uber, and a design background that predates all of it."
+    />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body>
+    <div class="bg-accent-shape">
+      <div class="bg-circle"></div>
+      <div class="bg-rect"></div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-logo" aria-label="Go to home page">
+          <img src="assets/images/icon.svg" alt="" />
+          <span>eggomakes</span>
+        </a>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+          <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </nav>
+
+    <main class="page">
+      <!-- ============================ HERO ============================ -->
+      <header class="callout-bg hero">
+        <div class="prefix">hi, i'm</div>
+        <div class="title"><b>Eghosa Ohenhen</b><b class="emp">.</b></div>
+
+        <!-- textscrambler.js targets .roles and cycles the phrase list -->
+        <span class="roles">Software Engineer</span>
+
+        <p class="hero__lede">
+          I build systems that have to run in real time and still feel considered — a
+          100Hz robot control loop at the MIT Media Lab, trading tools at Bloomberg,
+          trip infrastructure at Uber. I started as an artist, which is why I care
+          whether a thing is usable and not only whether it runs.
+        </p>
+
+        <div class="actions">
+          <a class="btn" href="mailto:eohenhen@mit.edu">Email me</a>
+          <a class="btn" href="https://www.linkedin.com/in/eghosa-ohenhen-010925201/" target="_blank" rel="noopener">
+            <img src="assets/images/linkedin.svg" alt="" />
+            LinkedIn
+          </a>
+          <!-- Drop your PDF at this path, or delete this button until you have one. -->
+          <a class="btn" href="assets/eghosa-ohenhen-resume.pdf" target="_blank" rel="noopener">Resume</a>
+          <!-- Add GitHub here once the profile is tidy:
+          <a class="btn" href="https://github.com/YOURHANDLE" target="_blank" rel="noopener">GitHub</a>
+          -->
+        </div>
+      </header>
+
+      <!-- ============================ NOW ============================= -->
+      <section>
+        <h2 class="section__title">Right now</h2>
+        <div class="panel now">
+          <p>
+            I'm a graduate researcher in the Fluid Interfaces group at the MIT Media
+            Lab, building the software for an embodied conversational robot — the layer
+            that decides how a face moves while it's listening, not just what it says.
+          </p>
+          <p>
+            I finish my MEng in EECS in June 2026. I'm open to full-time roles in
+            robotics, real-time systems, and product engineering, and I take on a small
+            number of freelance projects — usually teams that need a demo to actually
+            work by a date that isn't moving.
+          </p>
+        </div>
+      </section>
+
+      <!-- ========================= EXPERIENCE ========================= -->
+      <section>
+        <h2 class="section__title">Where I've worked</h2>
+        <div class="panel roles-list">
+          <article class="role">
+            <h3 class="role__title">
+              Graduate Researcher <span class="role__org">· MIT Media Lab, Fluid Interfaces</span>
+            </h3>
+            <div class="role__date">Sept 2025 — present</div>
+            <p class="role__note">
+              Built a 100Hz servo arbitration loop with ownership-based priority
+              scheduling so jaw, blink, gaze, and expression controllers stop fighting
+              over the same hardware. Custom instrumentation traced a stall nothing in
+              the logs explained: p99 loop lag went from 173ms to 7ms.
+            </p>
+          </article>
+
+          <article class="role">
+            <h3 class="role__title">
+              Software Engineering Intern <span class="role__org">· Bloomberg, Trading Platform</span>
+            </h3>
+            <div class="role__date">Jun — Aug 2025</div>
+            <p class="role__note">
+              Shipped a React reporting feature to the terminal that turns a trader's own
+              configuration into scheduled email reports, replacing work they were doing
+              by hand every morning.
+            </p>
+          </article>
+
+          <article class="role">
+            <h3 class="role__title">
+              Software Engineering Intern <span class="role__org">· Uber, Fulfillment Platform</span>
+            </h3>
+            <div class="role__date">May — Aug 2023</div>
+            <p class="role__note">
+              Expanded the feature that detects whether a driver is on track for the
+              fastest arrival, and built the Grafana dashboards and sub-20ms monitoring
+              pipeline the team needed to see its effect across 10M+ trips a day.
+            </p>
+          </article>
+
+          <article class="role">
+            <h3 class="role__title">
+              Hybrid Cloud Intern <span class="role__org">· IBM Watson Research</span>
+            </h3>
+            <div class="role__date">May — Aug 2022</div>
+            <p class="role__note">
+              Trained and demoed Harvard's EdgeBERT model on IBM hardware, then
+              repurposed it to read urgency in passenger commands to self-driving cars —
+              55% to 100% accuracy, mostly by reframing the problem.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- =========================== SKILLS =========================== -->
+      <section>
+        <h2 class="section__title">What I'm good at</h2>
+        <div class="skills">
+          <div class="panel skill">
+            <h3>Real-time &amp; embedded</h3>
+            <p>
+              Control loops that can't miss a deadline, and hardware that has to keep
+              working after it loses power.
+            </p>
+            <div class="tags">
+              <span class="tag">C</span><span class="tag">Assembly</span>
+              <span class="tag">ROS2</span><span class="tag">SPI / I²C / UART</span>
+              <span class="tag">LiDAR</span>
+            </div>
+          </div>
+
+          <div class="panel skill">
+            <h3>Backend &amp; distributed systems</h3>
+            <p>
+              Services and pipelines at a scale where the interesting failures only show
+              up in the tail.
+            </p>
+            <div class="tags">
+              <span class="tag">Go</span><span class="tag">Python</span>
+              <span class="tag">Kafka</span><span class="tag">SQL</span>
+              <span class="tag">Grafana</span><span class="tag">Linux</span>
+            </div>
+          </div>
+
+          <div class="panel skill">
+            <h3>Interfaces &amp; design</h3>
+            <p>
+              The part where the system meets a person. I do this end to end, from
+              research through the final pixel.
+            </p>
+            <div class="tags">
+              <span class="tag">React</span><span class="tag">TypeScript</span>
+              <span class="tag">Vue.js</span><span class="tag">Figma</span>
+              <span class="tag">Photoshop</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== HONORS =========================== -->
+      <section>
+        <h2 class="section__title">Also</h2>
+        <div class="panel">
+          <ul class="honors">
+            <li>
+              1st place, Autonomous Robot Race — MIT 6.141 Robotics: Science &amp; Systems
+              <span>May 2025</span>
+            </li>
+            <li>Congressional Art Award winner <span>2021</span></li>
+            <li>Freelance graphic designer, MIT Admissions <span>2024 — present</span></li>
+            <li>Marketing &amp; dev team, HackMIT <span>2021 — 2022</span></li>
+            <li>
+              MEng and SB in Electrical Engineering &amp; Computer Science, MIT
+              <span>2026 / 2025</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================ CTA ============================= -->
+      <section id="contact">
+        <div class="panel cta">
+          <p>Building something that has to work by a deadline?</p>
+          <a class="btn btn--ink" href="mailto:eohenhen@mit.edu">eohenhen@mit.edu</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <maintxt>Eghosa Ohenhen · Cambridge, MA</maintxt>
+    </footer>
+
+    <!-- Cycles the role line in the hero. Safe to delete if you'd rather
+         the line stayed static — nothing else depends on it. -->
+    <script src="assets/js/textscrambler.js"></script>
+
+    <script>
+      const navToggle = document.querySelector(".nav-toggle");
+      const navMenu = document.querySelector(".nav-menu");
+
+      navToggle.addEventListener("click", () => {
+        navToggle.classList.toggle("active");
+        navMenu.classList.toggle("active");
+      });
+
+      document.querySelectorAll(".nav-link").forEach((link) =>
+        link.addEventListener("click", () => {
+          navToggle.classList.remove("active");
+          navMenu.classList.remove("active");
+        })
+      );
+    </script>
+  </body>
+</html>
