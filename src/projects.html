@@ -83,9 +83,9 @@
           // If you can get a frame where someone is looking at it and it's
           // looking back, use that one — it sells the whole project.
           image: "assets/images/projects/marty.jpg",
-          badge: "Master's thesis project · MIT Media Lab, Fluid Interfaces · HAI 2026 poster",
+          badge: " MIT Media Lab, Fluid Interfaces · Thesis project",
           title: "Marty: A Real-Time Control Architecture for a Conversational Robot Head",
-          metric: "p99 loop lag: 173ms &rarr; 7ms",
+          metric: "Making a robot face move in time with its own voice. p99 loop lag: 173ms &rarr; 7ms",
           blurb:
             "Jaw, blink, gaze, and expression all want the same servos at the same time. I built a 100Hz arbitration loop with ownership-based priority scheduling so they negotiate instead of fighting. Then the thing got slow in a way nothing in the logs explained \u2014 so I wrote my own instrumentation, found the async event loop starving, and took p99 lag from 173ms to 7ms and the DAC buffer underflow rate from 92% down to near nothing. Below about 50ms a face stops looking laggy and starts looking alive.",
           tags: ["Robotics", "Python", "Real-time Systems"]
