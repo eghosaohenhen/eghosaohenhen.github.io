@@ -634,6 +634,7 @@ maintxt {
 
 /* --- modal: native <dialog>, so Esc and focus trapping come free ----- */
 .modal {
+  position: relative; /* anchors the absolute .modal__close to the dialog */
   width: min(38rem, calc(100% - 2rem));
   padding: 0;
   border: 1px solid var(--surface-border);
@@ -697,6 +698,7 @@ maintxt {
 }
 
 .modal__close {
+  
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
@@ -714,6 +716,83 @@ maintxt {
 
 [hidden] {
   display: none !important;
+}
+
+/* --- modal detail variant -------------------------------------------
+   The structured version: lead line, run-in problem/built/result
+   sections, an optional result figure, a stack row, and links.
+   The blurb version reuses .modal__blurb above; this adds the rest.
+   The modal scrolls its body so a long write-up stays usable.
+   ------------------------------------------------------------------- */
+.modal[open] {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+.modal__media {
+  flex: 0 0 auto;
+}
+
+.modal__body {
+  overflow-y: auto;
+}
+
+.detail__lead {
+  margin: 0 0 1.1rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.detail__section {
+  margin: 0 0 1rem;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+/* Run-in label: "The problem. ..." on the same line as its text. */
+.detail__section b {
+  color: var(--text-color);
+}
+
+.detail__figure {
+  margin: 0 0 1.1rem;
+}
+
+.detail__figure img {
+  width: 100%;
+  border: 1px solid var(--surface-border);
+  border-radius: 0.85rem;
+}
+
+.detail__figure figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  opacity: 0.6;
+}
+
+.detail__stack {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.detail__stack b {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  opacity: 0.55;
+}
+
+.detail__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.detail__links .btn--ink {
+  font-size: 0.85rem;
+  padding: 0.5em 1.1em;
 }
 
 /* ---------------------------------------------------------------------

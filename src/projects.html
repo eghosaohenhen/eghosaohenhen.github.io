@@ -58,11 +58,8 @@
       <div class="modal__body">
         <div class="modal__badge" id="modal-badge"></div>
         <h2 class="modal__title" id="modal-title"></h2>
-        <p class="modal__blurb" id="modal-blurb"></p>
-        <div class="modal__footer">
-          <div class="tags" id="modal-tags"></div>
-          <a class="btn btn--ink" id="modal-link" href="#">Read the full write-up</a>
-        </div>
+        <!-- Filled by JS with either the short blurb or the full detail. -->
+        <div id="modal-content"></div>
       </div>
     </dialog>
 
@@ -70,77 +67,152 @@
       /* -----------------------------------------------------------------
          PROJECT DATA — everything here comes off the resume.
 
-         `image` paths are placeholders. The comment above each one is the
-         shot to go get. A missing file falls back to the gradient, so the
-         page never looks broken while you're still collecting photos.
+         Each card needs: image, badge, title, metric, tags.
+         For the modal, a card carries ONE of:
 
-         `href` is optional — leave it out and the modal hides the link
-         instead of pointing at a page that doesn't exist yet.
+           blurb   — a string. The short version. Fine for most cards.
+
+           detail  — an object for the fuller write-up:
+             {
+               lead:    one-sentence framing (string),
+               problem: what was hard (string),
+               built:   what you made (string),
+               result:  the outcome, with the number (string),
+               chart:   OPTIONAL image path for a result figure. Omit it
+                        and no figure renders — the page stays clean until
+                        you have the graphic. Drop a file in and it shows.
+               stack:   array of tools,
+               links:   array of { label, href } — paper, thesis, demo, …
+             }
+
+         A card with `detail` uses it; otherwise it falls back to `blurb`.
+         `href` (a full write-up page) is still optional and independent.
       ----------------------------------------------------------------- */
       const projects = [
         {
           // IMAGE: the robot head on the bench, mid-expression, wires visible.
           // If you can get a frame where someone is looking at it and it's
           // looking back, use that one — it sells the whole project.
-          image: "assets/images/projects/marty.jpg",
-          badge: " MIT Media Lab, Fluid Interfaces · Thesis project",
-          title: "Marty: A Real-Time Control Architecture for a Conversational Robot Head",
-          metric: "Making a robot face move in time with its own voice. p99 loop lag: 173ms &rarr; 7ms",
-          blurb:
-            "Jaw, blink, gaze, and expression all want the same servos at the same time. I built a 100Hz arbitration loop with ownership-based priority scheduling so they negotiate instead of fighting. Then the thing got slow in a way nothing in the logs explained \u2014 so I wrote my own instrumentation, found the async event loop starving, and took p99 lag from 173ms to 7ms and the DAC buffer underflow rate from 92% down to near nothing. Below about 50ms a face stops looking laggy and starts looking alive.",
+          image: "assets/images/projects/robot.png",
+          badge: "MIT Media Lab · Fluid Interfaces",
+          title: "Marty: real-time control for a conversational robot head",
+          metric: "Jaw leads audio by 35ms · 96.7% in-sync",
+          detail: {
+            lead:
+              "I built the real-time control system for Marty, a 16-DOF animatronic head that holds open-ended spoken conversations and responds with coordinated facial expression, gaze, blinking, and speech-synced jaw motion.",
+            problem:
+              "Modern conversational AI can talk fluently, but making a physical face move believably in sync with that speech is a systems problem: dozens of small motor actions have to share a handful of servos and stay coordinated in real time, or the robot drops into the uncanny valley. I inherited an earlier prototype where behaviors were blocking scripts that stalled each other — one expression could freeze the whole face for seconds.",
+            built:
+              "I redesigned the control stack around a fixed-tick (100Hz) actuator loop that arbitrates between independent behavior controllers, resolves which controller \u201cowns\u201d each servo at any moment, and issues all motor updates as a single batched write. I also built a speech-synchronized jaw pipeline that extracts an amplitude envelope from the robot's generated speech and schedules jaw movements on a shared timeline aligned to audio playback.",
+            result:
+              "I instrumented the full audio-to-motor path and measured jaw motion leading audio by a median of 35ms — matching the natural visual lead in human speech — with 96.7% of events inside the perceptual synchrony window.",
+            // chart: "assets/images/projects/marty-sync.png",  // <- add when ready
+            stack: [
+              "Python",
+              "Raspberry Pi",
+              "PCA9685",
+              "OpenAI Realtime API",
+              "MediaPipe",
+              "asyncio / multiprocessing"
+            ],
+            // links: [
+            //   { label: "Read the paper", href: "#" },
+            //   { label: "Full thesis", href: "#" },
+            //   { label: "Demo video", href: "#" }
+            // ]
+          },
           tags: ["Robotics", "Python", "Real-time Systems"]
         },
         {
-          // IMAGE: the report UI on a Bloomberg terminal (blur any real
-          // tickers), or the generated email side by side with the config
-          // screen. Show the before-and-after of the workflow.
-          image: "assets/images/projects/bloomberg.jpg",
-          badge: "Bloomberg · Trading Platform",
-          title: "Automated trader reporting",
-          metric: "Shipped end-to-end to the terminal",
-          blurb:
-            "Traders were assembling the same reports by hand every day. I built and shipped a React app on the terminal that takes their own configuration and delivers the report by email on a schedule \u2014 stateless REST all the way down. Working across London and Italy teams also meant finding service issues I couldn't fix and writing client-side workarounds so the feature stayed up anyway.",
-          tags: ["React", "REST", "Production Software"]
+          // IMAGE: the robot mid-chase with a person in frame, or a clean
+          // shot of the drive base + ESP32 camera. robot_overview.jpg from
+          // your week 11 page is a strong default.
+          image: "assets/images/projects/team_photo.jpg",
+          video: "assets/videos/follower_test.mp4",
+          badge: "HTMAA · Machine Week",
+          title: "Person-following robot, from scratch",
+          metric: "My favorite class at MIT",
+          tags: ["Computer Vision", "Embedded", "Robotics"],
+          detail: {
+            lead:
+              "An autonomous robot that finds a person on its own and drives after them, built from scratch with a team for How to Make Almost Anything \u2014 my favorite class at MIT. I owned the vision-guided navigation.",
+            problem:
+              "We wanted to build a robot that followed you around and had an finger to scroll through reels while amplifying the noise with digital amplifier. The robot had a camera but running a local facial detection model on board was difficult as our ESP32 had very little RAM. However, off-board facial detection could be too slow. The machine had to be autonomous, and we had a week to get the robot moving.",
+            built:
+              "I wrote a Flask server that takes JPEG frames streamed from an ESP32-S3 over HTTPS, runs YOLO11n person detection at 30\u201360 FPS, converts each target's position into left/right wheel velocities, and sends them back over the same request. On the ESP32 I wrote threshold-based control that turns those velocities into turn-left / turn-right / straight / stop \u2014 far more robust in a live demo. I also built a manual web control page for bench-testing the drivetrain before the body was assembled. H",
+            result:
+              "I made the pipelien fast enough for smooth real-time following by keeping the control algorithm simple so image to direction latency was primarily from YOLO. On the ESP32, esponses were handled in an interrupt to not disrupt lower level timing for the motor control. ",
+            // chart: "assets/images/projects/robot-latency.png",  // add if you make one
+            stack: [
+              "Python / Flask",
+              "YOLO11n",
+              "ESP32-S3",
+              "C",
+              "Differential drive",
+              "WiFi / HTTP",
+              "Serial Communication"
+            ],
+            links: [
+              { label: "More about the project", href: "https://fab.cba.mit.edu/classes/863.25/people/EghosaOhenhen/week11.html" },
+              
+              // Your HTMAA site — swap "#" for the URL (or your site's home).
+              { label: "HTMAA site", href: "https://fab.cba.mit.edu/classes/863.25/people/EghosaOhenhen/aboutme.html" }
+              
+            ]
+          },
         },
-        {
-          // IMAGE: the Grafana dashboard, full-screen, with real-looking
-          // traffic on it. Dense dashboards read as scale instantly.
-          image: "assets/images/projects/uber.jpg",
-          badge: "Uber · Fulfillment Platform",
-          title: "Trip progress detection at scale",
-          metric: "10M+ trips a day, <20ms pipeline",
-          blurb:
-            "Expanded the feature that decides whether a driver is on track for the fastest arrival, which is the difference between a useful ETA and a lie. Then built the observability nobody had: Grafana dashboards on a sub-20-millisecond monitoring pipeline over SQL and Kafka, so the team could finally see what their framework changes did to ten million daily trips before they found out from users.",
-          tags: ["Kafka", "SQL", "Grafana", "Distributed Systems"]
-        },
-        {
-          // IMAGE: a slide from the exec presentation, or the accuracy
-          // curve going 55% -> 100%. A clean chart works fine here.
-          image: "assets/images/projects/edgebert.jpg",
-          badge: "IBM Watson Research",
-          title: "EdgeBERT for self-driving urgency",
-          metric: "55% &rarr; 100% urgency accuracy",
-          blurb:
-            "Trained and demoed Harvard's EdgeBERT model on IBM hardware in PyTorch and CUDA, then presented it to fifty executives. The more interesting half came after: I repurposed the model to judge how urgent a passenger's command to a self-driving car is, by building a dataset that maps sentiment onto urgency. Accuracy went from 55% to 100% \u2014 the win was in framing the problem, not tuning the model.",
-          tags: ["PyTorch", "NLP", "CUDA"]
-        },
+        // {
+        //   // IMAGE: the report UI on a Bloomberg terminal (blur any real
+        //   // tickers), or the generated email side by side with the config
+        //   // screen. Show the before-and-after of the workflow.
+        //   image: "assets/images/projects/bloomberg.jpg",
+        //   badge: "Bloomberg · Trading Platform",
+        //   title: "Automated trader reporting",
+        //   metric: "Shipped end-to-end to the terminal",
+        //   blurb:
+        //     "Traders I built and shipped a React app on the terminal that takes their own configuration and delivers the report by email on a schedule. Working across London and Italy teams also meant finding service issues I couldn't fix and writing client-side workarounds so the feature stayed up anyway.",
+        //   tags: ["React", "REST", "Production Software"]
+        // },
+        // {
+        //   // IMAGE: the Grafana dashboard, full-screen, with real-looking
+        //   // traffic on it. Dense dashboards read as scale instantly.
+        //   image: "assets/images/projects/uber.jpg",
+        //   badge: "Uber · Fulfillment Platform",
+        //   title: "Trip progress detection at scale",
+        //   metric: "10M+ trips a day, <20ms pipeline",
+        //   blurb:
+        //     "Expanded the feature that decides whether a driver is on track for the fastest arrival, which is the difference between a useful ETA and a lie. Then built the observability nobody had: Grafana dashboards on a sub-20-millisecond monitoring pipeline over SQL and Kafka, so the team could finally see what their framework changes did to ten million daily trips before they found out from users.",
+        //   tags: ["Kafka", "SQL", "Grafana", "Distributed Systems"]
+        // },
+        // {
+        //   // IMAGE: a slide from the exec presentation, or the accuracy
+        //   // curve going 55% -> 100%. A clean chart works fine here.
+        //   image: "assets/images/projects/edgebert.jpg",
+        //   badge: "IBM Watson Research",
+        //   title: "EdgeBERT for self-driving urgency",
+        //   metric: "55% &rarr; 100% urgency accuracy",
+        //   blurb:
+        //     "Trained and demoed Harvard's EdgeBERT model on IBM hardware in PyTorch and CUDA, then presented it to fifty executives. The more interesting half came after: I repurposed the model to judge how urgent a passenger's command to a self-driving car is, by building a dataset that maps sentiment onto urgency. Accuracy went from 55% to 100% \u2014 the win was in framing the problem, not tuning the model.",
+        //   tags: ["PyTorch", "NLP", "CUDA"]
+        // },
         {
           // IMAGE: the racecar on the track mid-run, motion blur welcome.
           // Inset the LiDAR point cloud or the CV detection view if you have
           // a screen recording to pull a frame from.
-          image: "assets/images/projects/racecar.jpg",
-          badge: "1st Place · MIT 6.141",
+          image: "assets/images/projects/racecar.jpeg",
+          badge: "Robotics",
           title: "Autonomous racecar",
-          metric: "Won the head-to-head race",
+          metric: "1st Place · MIT Robotics, Science and Systems",
           blurb:
-            "A ROS2 robot that follows traffic and races other robots wheel to wheel, using LiDAR for localization and computer vision for detection and control. It won. Racing against another autonomous car is a different problem from racing a clock \u2014 you're reacting to something that's also reacting to you, and the safe line and the fast line stop being the same line.",
-          tags: ["ROS2", "LiDAR", "Computer Vision", "Docker"]
+    
+            "Collaborated with team of four to program an autonomous racecar bot for two final challenges. First, used LiDAR to make a particle-filter localization with pure pursuit to win the race. In the second challenge the robot planned a path through a mapped obstacle course. Used YOLO11n to catch bananas along the route to trigger a three-second stop, move closer to take a photo and resume. Used color segmentation read the traffic light with safety controller to react to pedestrians.",
+          tags: ["ROS2", "LiDAR", "Computer Vision", "Docker", "Path Planning", "YOLO"]
         },
         {
           // IMAGE: both devices powered on and in sync, hub and mobile unit
           // in the same frame showing the same task. A macro of the PCB
           // works as a second shot once the modal supports two images.
-          image: "assets/images/projects/taskbuddy.jpg",
+          image: "assets/images/projects/task_buddy.jpeg",
           badge: "Embedded",
           title: "Task Buddy",
           metric: "Keeps time through a power loss",
@@ -149,28 +221,40 @@
           tags: ["C", "Bluetooth", "SPI / I2C", "Circuit Design"]
         },
         {
-          // IMAGE: the two portals side by side on a laptop and a phone.
-          // The map view with pantry pins is the most legible single screen.
-          image: "assets/images/projects/xpresspantry.jpg",
-          badge: "Full-stack",
-          title: "Xpress Pantry",
-          metric: "Two portals, built from interviews",
+          // IMAGE: both devices powered on and in sync, hub and mobile unit
+          // in the same frame showing the same task. A macro of the PCB
+          // works as a second shot once the modal supports two images.
+          image: "assets/images/projects/taskbuddy.jpg",
+          badge: "Embedded",
+          title: "Plant Nanny",
+          metric: "Reacts to your real hydration data.",
           blurb:
-            "A food pantry ordering platform with two sides: staff set inventory, storefront visibility, and pickup windows; clients find pantries nearby, browse what's actually in stock, and schedule a pickup. Node, MongoDB, TypeScript, Vue, with Google Maps and a food database wired in. I ran need-finding interviews with community members first, and they changed the design \u2014 dignity and privacy mattered more to people than speed did.",
-          tags: ["TypeScript", "Vue.js", "MongoDB", "UX Research"]
+            "Designing a plant-inspired desk pet on an ESP32-C3 that expresses moods through animated pixel art on a round LCD. The current focus is a Bluetooth integration that pulls real hydration data from a smart water bottle, turning the urge to drink more water into something a little creature actually reacts to.",
+          tags: ["Product Design","C", "Bluetooth", "SPI / I2C"]
         },
-        {
-          // IMAGE: a grid of your best MIT Admissions pieces, or the
-          // Congressional Art Award piece photographed properly. This card
-          // is the proof that the design claim on your homepage is real.
-          image: "assets/images/projects/design.jpg",
-          badge: "Design",
-          title: "Graphic design, MIT Admissions",
-          metric: "Congressional Art Award winner",
-          blurb:
-            "Freelance design work for MIT Admissions since 2024, for an audience of seventeen-year-olds deciding what to do with their lives. Earlier: a Congressional Art Award. The art came first and it's why I care whether a thing is usable, not just whether it runs.",
-          tags: ["Figma", "Photoshop", "Visual Design"]
-        }
+        // {
+        //   // IMAGE: the two portals side by side on a laptop and a phone.
+        //   // The map view with pantry pins is the most legible single screen.
+        //   image: "assets/images/projects/xpresspantry.jpg",
+        //   badge: "Full-stack",
+        //   title: "Xpress Pantry",
+        //   metric: "Two portals, built from interviews",
+        //   blurb:
+        //     "A food pantry ordering platform with two sides: staff set inventory, storefront visibility, and pickup windows; clients find pantries nearby, browse what's actually in stock, and schedule a pickup. Node, MongoDB, TypeScript, Vue, with Google Maps and a food database wired in. I ran need-finding interviews with community members first, and they changed the design \u2014 dignity and privacy mattered more to people than speed did.",
+        //   tags: ["TypeScript", "Vue.js", "MongoDB", "UX Research"]
+        // },
+        // {
+        //   // IMAGE: a grid of your best MIT Admissions pieces, or the
+        //   // Congressional Art Award piece photographed properly. This card
+        //   // is the proof that the design claim on your homepage is real.
+        //   image: "assets/images/projects/design.jpg",
+        //   badge: "Design",
+        //   title: "Graphic design, MIT Admissions",
+        //   metric: "Congressional Art Award winner",
+        //   blurb:
+        //     "Freelance design work for MIT Admissions since 2024, for an audience of seventeen-year-olds deciding what to do with their lives. Earlier: a Congressional Art Award. The art came first and it's why I care whether a thing is usable, not just whether it runs.",
+        //   tags: ["Figma", "Photoshop", "Visual Design"]
+        // }
       ];
 
       /* ---------------------------- render ---------------------------- */
@@ -197,31 +281,69 @@
 
       /* ---------------------------- modal ----------------------------- */
       const modal = document.getElementById("modal");
-      const modalLink = document.getElementById("modal-link");
+      const modalContent = document.getElementById("modal-content");
+
+      // Escape user text before it goes into innerHTML.
+      const esc = (s) =>
+        String(s).replace(/[&<>"]/g, (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])
+        );
+
+      const tagRow = (tags) =>
+        `<div class="tags">${tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>`;
+
+      // The short version: blurb + tags + optional write-up link.
+      function renderBlurb(p) {
+        const link = p.href
+          ? `<a class="btn btn--ink" href="${esc(p.href)}" style="margin-top:1.1rem">Read the full write-up</a>`
+          : "";
+        return `
+          <p class="modal__blurb">${esc(p.blurb)}</p>
+          <div class="modal__footer">${tagRow(p.tags)}${link}</div>`;
+      }
+
+      // The full version: lead, run-in sections, figure, stack, links.
+      function renderDetail(p) {
+        const d = p.detail;
+        const figure = d.chart
+          ? `<figure class="detail__figure">
+               <img src="${esc(d.chart)}" alt="" onerror="this.closest('figure').remove()" />
+             </figure>`
+          : "";
+        const links = (d.links || [])
+          .map((l) => `<a class="btn btn--ink" href="${esc(l.href)}">${esc(l.label)}</a>`)
+          .join("");
+
+        return `
+          <p class="detail__lead">${esc(d.lead)}</p>
+          <p class="detail__section"><b>The problem.</b> ${esc(d.problem)}</p>
+          <p class="detail__section"><b>What I built.</b> ${esc(d.built)}</p>
+          <p class="detail__section"><b>Result.</b> ${esc(d.result)}</p>
+          ${figure}
+          <p class="detail__stack"><b>Stack</b><br>${d.stack.map(esc).join(" · ")}</p>
+          ${tagRow(p.tags)}
+          ${links ? `<div class="detail__links" style="margin-top:1.1rem">${links}</div>` : ""}`;
+      }
 
       track.addEventListener("click", (e) => {
         const card = e.target.closest(".card");
         if (!card) return;
 
         const p = projects[card.dataset.index];
-        document.getElementById("modal-media").innerHTML = `<img src="${p.image}" alt="" onerror="this.remove()" />`;
+        document.getElementById("modal-media").innerHTML = p.video
+          ? `<video src="${p.video}" controls playsinline poster="${p.image}"></video>`
+          : `<img src="${p.image}" alt="" onerror="this.remove()" />`;
         document.getElementById("modal-badge").textContent = p.badge;
         document.getElementById("modal-title").textContent = p.title;
-        document.getElementById("modal-blurb").textContent = p.blurb;
-        document.getElementById("modal-tags").innerHTML = p.tags
-          .map((t) => `<span class="tag">${t}</span>`)
-          .join("");
+        modalContent.innerHTML = p.detail ? renderDetail(p) : renderBlurb(p);
 
-        // No write-up page yet? Don't show a dead link.
-        modalLink.hidden = !p.href;
-        if (p.href) modalLink.href = p.href;
-
+        modal.scrollTop = 0;
         modal.showModal();
       });
 
       modal.querySelector(".modal__close").addEventListener("click", () => modal.close());
 
-      // Click outside the card closes it.
+      // Reset scroll each open, and click-outside closes.
       modal.addEventListener("click", (e) => {
         if (e.target === modal) modal.close();
       });

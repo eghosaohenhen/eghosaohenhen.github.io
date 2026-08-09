@@ -77,6 +77,15 @@ const phrases = [
   "Artist",
 ];
 
+const contactRoles = [
+  "drafting marketing materials for your business",
+  "need building automation software",
+  "any inquiries",
+  "Interface Design",
+  "Artist",
+];
+
+
 const el = document.querySelector(".roles");
 
 // Bail if the element isn't on this page — the old version threw here and
